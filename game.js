@@ -63,7 +63,14 @@ class Player{
         this.loadImages();
 
         //------------------
-        this.runningSound = new Audio();
+        this.runningSound = new Audio();  
+        this.runningSound.src = "sounds/running.mp3";
+
+        this.jumpSound = new Audio();
+        this.jumpSound.src = "sounds/jump.mp3";
+
+        this.deadSound = new Audio();
+        this.deadSound.src = "sounds/dead.mp3";
     }
 
     loadImages(){
@@ -95,6 +102,7 @@ class Player{
         let zoom = this.y-40;
         this.width = 200+zoom;
         this.height = 200+zoom;
+        this.runningSound.volume = 0.2 + (zoom/400);
 
         ctx.drawImage(this.animations[this.animation].images[this.frame],
             this.x,
@@ -119,7 +127,17 @@ class Player{
             this.y + this.height/1.3 + this.height/8 > obstacle.y
         ){
             speed = 0;
-            this.animation = "Dead";
+            if(this.animation != 'Dead'){
+                this.animation = "Dead";
+                this.runningSound.pause();
+                this.deadSound.play();
+            }
+        }
+
+        //Play sound
+        if(this.animation == 'Run'){
+            this.runningSound.loop = true;
+            this.runningSound.play();
         }
     }
 }
@@ -231,6 +249,7 @@ document.addEventListener('keydown', (e) => {
     }
     if(e.key == " "){
         player.animation = 'Jump';
+        player.jumpSound.play();
         player.y -= 20;
         player.frame = 0;
         setTimeout(() => {
